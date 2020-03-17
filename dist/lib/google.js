@@ -103,6 +103,21 @@ function () {
       _shelljs.default.exec(`echo '${docker}' >${this.workingDir}/bundle/Dockerfile`);
 
       _winston.default.debug(`the following Dockerfile will be used:\n${JSON.stringify(_jsYaml.default.safeLoad(_fs.default.readFileSync(`${this.workingDir}/bundle/Dockerfile`)))}`);
+
+      // 
+      // Compress node_modules
+      // 
+      var pwd = _shelljs.default.pwd().toString();
+
+      _shelljs.default.cd(`${this.workingDir}/bundle/programs/server/npm/`);
+      _shelljs.default.exec(`tar -zcf node_modules.tar.gz node_modules`);
+
+      _shelljs.default.exec(`split -b 20m node_modules.tar.gz "node_modules.tar.gz.part"`);
+
+      _shelljs.default.rm("-rf", `node_modules`);
+      _shelljs.default.rm("-f", `node_modules.tar.gz`);
+
+      _shelljs.default.cd(pwd);
     }
   }, {
     key: "deployBundle",
