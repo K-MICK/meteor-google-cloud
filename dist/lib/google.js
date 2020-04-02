@@ -50,7 +50,9 @@ function () {
         appFile = _ref.appFile,
         workingDir = _ref.workingDir,
         ci = _ref.ci,
-        env = _ref.env;
+        env = _ref.env,
+        nodeVersion = _ref.nodeVersion,
+        npmVersion = _ref.npmVersion;
 
     _classCallCheck(this, AppEngineInstance);
 
@@ -61,6 +63,8 @@ function () {
     this.googleCloudSettings = settingsFile['meteor-google-cloud'];
     this.ci = ci;
     this.env = env;
+    this.nodeVersion = nodeVersion;
+    this.npmVersion = npmVersion;
   }
 
   _createClass(AppEngineInstance, [{
@@ -83,13 +87,18 @@ function () {
 
       _shelljs.default.sed('-i', '{{ METEOR_SETTINGS }}', `'${compactSettings}'`, `${this.workingDir}/bundle/app.yaml`);
 
-      _winston.default.debug(`the following app.yaml will be used:\n${JSON.stringify(_jsYaml.default.safeLoad(_fs.default.readFileSync(`${this.workingDir}/bundle/app.yaml`)))}`);
+      var resultAppYaml = _jsYaml.default.safeLoad(_fs.default.readFileSync(`${this.workingDir}/bundle/app.yaml`));
 
-      var nodeVersion = _shelljs.default.exec(`meteor node -v ${this.ci ? '--allow-superuser' : ''}`, {
+      resultAppYaml.env_variables.MONGO_URL = '*****';
+      resultAppYaml.env_variables.MONGO_OPLOG_URL = '*****';
+
+      _winston.default.debug(`the following app.yaml will be used:\n${JSON.stringify(resultAppYaml)}`);
+
+      var nodeVersion = this.nodeVersion || _shelljs.default.exec(`meteor node -v ${this.ci ? '--allow-superuser' : ''}`, {
         silent: true
       }).stdout.trim();
 
-      var npmVersion = _shelljs.default.exec(`meteor npm -v ${this.ci ? '--allow-superuser' : ''}`, {
+      var npmVersion = this.npmVersion || _shelljs.default.exec(`meteor npm -v ${this.ci ? '--allow-superuser' : ''}`, {
         silent: true
       }).stdout.trim();
 
