@@ -69,9 +69,11 @@ function validateMeteor() {
 
   _winston.default.debug('check current Meteor release >= 1.4');
 
+  /*
   if (majorVersion < 1 || minorVersion < 4) {
     throw new Error('Meteor version must be >= 1.4');
   }
+  */
 }
 
 function validateSettings(filePath) {
